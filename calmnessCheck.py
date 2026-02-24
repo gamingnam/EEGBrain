@@ -12,7 +12,7 @@ def main():
     DataFilter.enable_data_logger()
     MLModel.enable_ml_logger()
 
-    arduino = serial.Serial('/dev/cu.usbserial-110', baudrate=115200, timeout=.1)
+    #arduino = serial.Serial('/dev/cu.usbserial-110', baudrate=115200, timeout=.1)
 
 
 
@@ -50,23 +50,6 @@ def main():
 
 
     try:
-
-        print("Waiting for DFPlayer...")
-        while True:
-            line = arduino.readline().decode(errors="ignore").strip()
-            if "DFPlayer Mini module initialized!" in line:
-                print("DFPlayer ready")
-                break
-        time.sleep(0.5)
-
-        arduino.write(b"f1s1\n")
-        print(arduino.readline())
-        time.sleep(1)
-        arduino.write(b"v30\n")
-        print(arduino.readline())
-        time.sleep(1)
-        arduino.write(b"l\n")
-        print(arduino.readline())
         while True:
             # ---- Get last 4 seconds of data ----
             data = board.get_current_board_data(window_samples)
@@ -88,26 +71,7 @@ def main():
 
             print(f"Mindfulness: {m:.3f}   Restfulness: {r:.3f}")
 
-            now = time.time()  # update once per second
-
-            '''if m > r:
-                arduino.write(bytes("-", 'utf-8'))
-                print("decreased vol")
-                time.sleep(3)
-                print(arduino.readline())
-            else:
-                arduino.write(bytes("+", 'utf-8'))
-                print("increased vol")
-                time.sleep(3)
-                print(arduino.readline())'''
-
-            if r > m :
-                arduino.write(b"-\n")
-
-            elif m > r :
-                arduino.write(b"+\n")
-            print(arduino.readline())
-            time.sleep(1)
+            now = time.time()
 
     except KeyboardInterrupt:
         print("Stopping...")

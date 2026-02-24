@@ -144,7 +144,7 @@ def main():
     params = BrainFlowInputParams()
     params.serial_port = SERIAL_PORT
     #DEFAULT_BOARD_ID = BoardIds.CYTON_BOARD.value
-    DEFAULT_BOARD_ID = BoardIds.SYNTHETIC_BOARD.value
+    DEFAULT_BOARD_ID = BoardIds.value
 
     board_shim = BoardShim(DEFAULT_BOARD_ID, params)
     try:
