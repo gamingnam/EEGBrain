@@ -727,7 +727,7 @@ class RealTimePredictionSystem:
             except:
                 confidence = 0.5  # Default confidence if probability not available
 
-            color = "red" if prediction == 0 else "blue"
+            color = "" if prediction == 0 else "blue"
             return color, confidence
 
         except Exception as e:
@@ -752,14 +752,17 @@ class RealTimePredictionSystem:
         time.sleep(2)
 
         try:
-            prediction_count = 0
+            prediction_count = []
+            sample_lim = 10
             while True:
                 prediction, confidence = self.predict_from_current_data()
-                prediction_count += 1
-
+                prediction_count.append(prediction)
+                if len(prediction_count) < sample_lim:
+                    prediction_count.pop(-1)
+                avg_pred = "blue" if prediction_count.count("blue") > prediction_count.count("red") else "red"
                 if prediction not in ["insufficient_data", "no_data", "error"]:
                     stimulus.show_color(prediction)
-                    print(f"Prediction {prediction_count}: {prediction} (confidence: {confidence:.2f})")
+                    print(f"Prediction: {prediction} (confidence: {confidence:.2f})")
                 elif prediction == "insufficient_data":
                     stimulus.show_color("gray")
                     print("Insufficient data for prediction")
@@ -808,6 +811,7 @@ def collect_data_session():
         collector = DataCollectionManager(board, args.subject_id)
 
         # Collect data
+        #IM LAZY SO I WILL TEMPORARILY JUST RENAME SESSION NAMES
         df = collector.collect_session_data(args.session_name)
 
         if df is not None:
@@ -930,17 +934,32 @@ if __name__ == "__main__":
     else:
         print(f"Unknown command: {command}")
         sys.exit(1)
+#note CHANGE SUBJECT ID TO NAMES AND SESSION NAMES FOR ADDITION OF CSV
+
 
 # PREDICT: python3 red_blue_classifier.py predict --model-path models/subject01_red_blue_model.pkl
+# PREDICT: python3 red_blue_classifier.py predict --model-path models/subjectSantos_red_blue_model.pkl
+# python3 red_blue_classifier.py predict --model-path models/subjectMinh_red_blue_model.pkl
+# python3 red_blue_classifier.py predict --model-path models/subjectChanyoo_red_blue_model.pkl
+# PREDICT: python3 red_blue_classifier.py predict --model-path models/general_red_blue_model.pkl
+# PREDICT: python3 red_blue_classifier.py predict --model-path models/subjectNam_red_blue_model.pkl
 
 # Train models using all collected data
 #python3 red_blue_classifier.py train --subject-id subject01
+#python3 red_blue_classifier.py train --subject-id subjectSantos
+#python3 red_blue_classifier.py train --subject-id subjectMinh
+#python3 red_blue_classifier.py train --subject-id subjectChanyoo
+#python3 red_blue_classifier.py train --subject-id subjectNam
 
 # Train a general model using data from multiple subjects
 #python3 red_blue_classifier.py train --subject-id general
 
 # Collect training data for a subject
 #python3 red_blue_classifier.py collect --subject-id subject01 --session-name morning_session
+#python3 red_blue_classifier.py collect --subject-id subjectSantos --session-name santos_session_1
+#python3 red_blue_classifier.py collect --subject-id subjectMinh --session-name minh_session_1
+#python3 red_blue_classifier.py collect --subject-id subjectChanyoo --session-name chanyoo_session_1
+#python3 red_blue_classifier.py collect --subject-id subjectNam --session-name nam_session_1
 
 # Collect multiple sessions for better training data
 #python3 red_blue_classifier.py collect --subject-id subject01 --session-name afternoon_session
